@@ -1,0 +1,11 @@
+{
+  "name": "read-aloud",
+  "version": "0.1.0",
+  "description": "Reads Claude's replies aloud as it works, only in the session you are working in, with a queue of unheard replies, speed controls and a Now reading panel. macOS.",
+  "types": "./types/index.d.ts",
+  "author": {
+    "name": "IlijaVorontsov"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/IlijaVorontsov/claude-mods"
+}

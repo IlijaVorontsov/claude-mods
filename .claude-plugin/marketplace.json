@@ -1,0 +1,14 @@
+{
+  "name": "ilija-mods",
+  "description": "Mods for Claude Code by IlijaVorontsov.",
+  "owner": {
+    "name": "IlijaVorontsov"
+  },
+  "plugins": [
+    {
+      "name": "read-aloud",
+      "source": "./read-aloud",
+      "description": "Reads Claude's replies aloud as it works, with a queue of unheard replies, speed controls and a Now reading panel. macOS."
+    }
+  ]
+}
