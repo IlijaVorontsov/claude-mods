@@ -151,6 +151,8 @@ const rowOf = new Map<string, string>()
 // The run being followed: each reading gets its own, so a report from a run that was
 // replaced (a restart of the same piece) is ignored.
 let runId = ''
+// The ids of the main conversation's turns, newest last (see turn.start).
+const mainTurns = new Set<string>()
 // Sentences of each drawn reply, keyed by their joined text.
 const rowPieces = new Map<string, { sentences: string[]; blocks: Block[] }>()
 
@@ -631,12 +633,25 @@ export const register: Register = on => {
     return { text: `Read aloud ${value ? 'on' : 'off'}.` }
   })
 
+  // The turns of the main conversation, as each one starts. A step belonging to no such
+  // turn is a side request (a /btw answer, a compaction): it is never read aloud.
+  on('turn.start', async ($, e, next) => {
+    const started = await next(e)
+    if (e.agentId === undefined) {
+      mainTurns.add(started.turnId)
+      if (mainTurns.size > 50) mainTurns.delete(mainTurns.values().next().value as string)
+    }
+    return started
+  })
+
   // Each model response of the main conversation, as soon as it is complete: the text
   // written between steps is read while the work goes on, and the final reply is the
   // last step's text, so nothing is read twice.
   on('turn.step', async function* ($, e, next) {
     const result = yield* next(e)
-    if (e.agentId === undefined) await arrive($, `${e.turnId}:${e.index}`, result.answer)
+    if (e.agentId === undefined && mainTurns.has(e.turnId)) {
+      await arrive($, `${e.turnId}:${e.index}`, result.answer)
+    }
     return result
   })
 
